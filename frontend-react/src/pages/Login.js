@@ -21,7 +21,12 @@ const Login = () => {
         window.location.href = "/";
       }
     } catch (err) {
-      setError(err.response?.data?.error || "Erreur lors de la connexion");
+      if (err.response?.status === 401) {
+        setError("Identifiant / Mot de passe Incorrect");
+      } else {
+        setError(err.response?.data?.error || "Erreur lors de la connexion");
+      }
+      
     }
   };
 
@@ -41,7 +46,8 @@ const Login = () => {
             className="w-full border border-gray-300 px-3 py-2 rounded"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="exemple@mail.com"
+            placeholder="Veuillez Indiquer Votre Email"
+            required
           />
         </div>
 
@@ -52,11 +58,12 @@ const Login = () => {
             className="w-full border border-gray-300 px-3 py-2 rounded"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="********"
+            placeholder="Veuillez Indiquer Votre Mot de Passe"
+            required
           />
         </div>
 
-        {/* Sélecteur de rôle */}
+        {/* Sélecteur de rôle 
         <div className="mb-4">
           <label className="block mb-1 font-semibold">Rôle</label>
           <select
@@ -68,6 +75,7 @@ const Login = () => {
             <option value="instructor">Formateur (Instructor)</option>
           </select>
         </div>
+        */}
 
         <button
           type="submit"

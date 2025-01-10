@@ -14,9 +14,13 @@ const Signup = () => {
       await signupUser({ username, email, password, role });
       alert('Inscription réussie ! Vous pouvez maintenant vous connecter.');
       // Par exemple, rediriger vers le login
-      // window.location.href = '/login';
+      window.location.href = '/login';
     } catch (err) {
-      setError(err.response?.data?.error || 'Erreur lors de l’inscription');
+      console.log(err.response?.status)
+      if (err.response?.status === 500) {
+        setError("Erreur lors de l'inscription, veuillez reéssayer plutard");
+      }
+      setError("Utilisateur Existant, Veuillez Choisir un Nouvel Email");
     }
   };
 
@@ -36,7 +40,8 @@ const Signup = () => {
             className="w-full border border-gray-300 px-3 py-2 rounded"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="JohnDoe"
+            placeholder="Veuillez Indiquer Votre Nom Complet"
+            required
           />
         </div>
 
@@ -47,7 +52,8 @@ const Signup = () => {
             className="w-full border border-gray-300 px-3 py-2 rounded"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="exemple@mail.com"
+            placeholder="Veuillez Indiquer Votre Email"
+            required
           />
         </div>
 
@@ -58,7 +64,8 @@ const Signup = () => {
             className="w-full border border-gray-300 px-3 py-2 rounded"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="********"
+            placeholder="Veuillez Indiquer Votre Mot de Passe"
+            required
           />
         </div>
 
