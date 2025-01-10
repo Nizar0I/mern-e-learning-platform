@@ -1,13 +1,25 @@
 const router = require('express').Router();
-const { createCourse, getCourses, getCourseById } = require('../controllers/courseController');
+const {
+  createCourse,
+  getCourses,
+  getCourseById,
+  updateCourse,
+  deleteCourse,
+} = require("../controllers/courseController");
 
-// POST /courses
-router.post('/', createCourse);
+// Create a course
+router.post("/", createCourse);
 
-// GET /courses
-router.get('/', getCourses);
+// Get all courses (optionally filtered by ?search=...)
+router.get("/", getCourses);
 
-// GET /courses/:id
-router.get('/:id', getCourseById);
+// Get one course by ID
+router.get("/:id", getCourseById);
+
+// PUT /courses/:id
+router.put("/:id", updateCourse);
+
+// DELETE /courses/:id
+router.delete("/:id", deleteCourse);
 
 module.exports = router;

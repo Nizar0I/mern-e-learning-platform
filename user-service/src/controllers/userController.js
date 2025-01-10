@@ -3,17 +3,21 @@ const bcrypt = require('bcrypt');
 
 exports.signup = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, role } = req.body; // <--- Get 'role'
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ error: 'Utilisateur déjà existant' });
+      return res.status(400).json({ error: "Utilisateur déjà existant" });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user with role
     const newUser = await User.create({
       username,
       email,
-      passwordHash: hashedPassword
+      passwordHash: hashedPassword,
+      role: role || "student", // fallback if none provided
     });
+
     res.status(201).json(newUser);
   } catch (err) {
     res.status(500).json({ error: err.message });

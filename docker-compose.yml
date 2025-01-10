@@ -1,4 +1,5 @@
 version: '3.8'
+
 services:
   mongo:
     image: mongo:6
@@ -7,19 +8,20 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+    command: mongod --bind_ip_all --noauth # Disable authentication
 
-  api-gateway:
-    build: ./api-gateway
-    container_name: api-gateway
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
     ports:
-      - "3000:3000"
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: true # Activer l'accès admin
+      ME_CONFIG_MONGODB_AUTH: false       # Désactiver l'authentification
     depends_on:
       - mongo
-      - user-service
-      - course-service
-      - payment-service
-    environment:
-      - JWT_SECRET=secret_key
 
   user-service:
     build: ./user-service
@@ -28,8 +30,6 @@ services:
       - "3001:3001"
     depends_on:
       - mongo
-    environment:
-      - MONGO_URI=mongodb://mongo:27017/userdb
 
   course-service:
     build: ./course-service
@@ -38,8 +38,6 @@ services:
       - "3002:3002"
     depends_on:
       - mongo
-    environment:
-      - MONGO_URI=mongodb://mongo:27017/coursedb
 
   payment-service:
     build: ./payment-service
@@ -48,22 +46,18 @@ services:
       - "3003:3003"
     depends_on:
       - mongo
-    environment:
-      - MONGO_URI=mongodb://mongo:27017/paymentdb
 
-  notification-service:
-    build: ./notification-service
-    container_name: notification-service
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
     ports:
-      - "3004:3004"
-
-  frontend-react:
-    build: ./frontend-react
-    container_name: frontend
-    ports:
-      - "3005:3000"
+      - "3000:3000"
     depends_on:
-      - api-gateway
+      - user-service
+      - course-service
+      - payment-service
+    environment:
+      - JWT_SECRET=secret_key
 
 volumes:
   mongo_data:
