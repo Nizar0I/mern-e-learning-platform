@@ -22,9 +22,11 @@ export const loginInstructor = (payload) => {
 };
 
 // ----- E-Learning : Cours -----
-export const getAllCourses = () => {
-  return axios.get(`${API_URL}/courses/`);
+export const getAllCourses = (search = "") => {
+  // Include search as a query parameter
+  return axios.get(`${API_URL}/courses?search=${encodeURIComponent(search)}`);
 };
+
 
 export const getCoursesByInstructor = (instructorId) => {
   return axios.get(`${API_URL}/courses?instructorId=${instructorId}`);
@@ -54,4 +56,14 @@ export const updateCourse = async (courseId, payload) => {
 // DELETE a course by ID
 export const deleteCourse = async (courseId) => {
   return axios.delete(`${API_URL}/courses/${courseId}`);
+};
+
+
+export const checkout = (payload) => {
+  const token = localStorage.getItem("token") || "";
+  return axios.post(`${API_URL}/payments/checkout`, payload, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };

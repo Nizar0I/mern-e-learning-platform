@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode"; // or import { jwtDecode } from 'jwt-decode';
-// depending on your version, see the library docs
+import { useCart } from "../context/CartContext"; // <-- Import your CartContext hook
 
 const Navbar = () => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+
+  // Access the cart state from CartContext
+  const { cart } = useCart();
 
   useEffect(() => {
     checkLoggedInUser();
@@ -39,11 +42,13 @@ const Navbar = () => {
   return (
     <header className="bg-white shadow sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+        {/* Logo */}
         <Link to="/" className="text-2xl font-bold text-blue-600">
           StudyFi
         </Link>
 
-        <nav className="space-x-4">
+        <nav className="space-x-4 flex items-center">
+          {/* Courses Link */}
           <Link
             to="/courses"
             className="text-gray-600 hover:text-blue-600 transition"
@@ -51,6 +56,20 @@ const Navbar = () => {
             Cours
           </Link>
 
+          {/* Cart Link with badge */}
+          <Link
+            to="/cart"
+            className="relative text-gray-600 hover:text-blue-600 transition"
+          >
+            Panier
+            {cart.length > 0 && (
+              <span className="absolute top-[-6px] right-[-12px] bg-red-600 text-white text-xs rounded-full px-2 py-0.5">
+                {cart.length}
+              </span>
+            )}
+          </Link>
+
+          {/* If User is logged in */}
           {user ? (
             <>
               {/* If user is instructor, show a button to the instructor dashboard */}

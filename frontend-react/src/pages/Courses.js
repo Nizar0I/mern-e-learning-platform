@@ -36,7 +36,7 @@ const Courses = () => {
             className="block bg-white shadow rounded overflow-hidden hover:shadow-lg transition"
           >
             <img
-              src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&w=800&q=80"
+              src={course.image || "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&w=800&q=80"}
               alt="course"
               className="w-full h-40 object-cover"
             />

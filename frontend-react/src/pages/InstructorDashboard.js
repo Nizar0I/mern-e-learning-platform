@@ -16,56 +16,58 @@ const InstructorDashboard = () => {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
+  const [image, setImage] = useState("");
+
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-const [editingCourse, setEditingCourse] = useState(null);
+  const [editingCourse, setEditingCourse] = useState(null);
 
-const openEditModal = (course) => {
-  setEditingCourse(course);
-  setTitle(course.title);
-  setDescription(course.description);
-  setPrice(course.price);
-  setCategories(course.categories || "");
-  setVideoUrl(course.content[0]?.lectures[0]?.videoUrl || "");
-  setIsModalOpen(true);
-};
+  const openEditModal = (course) => {
+    setEditingCourse(course);
+    setTitle(course.title);
+    setDescription(course.description);
+    setPrice(course.price);
+    setCategories(course.categories || "");
+    setVideoUrl(course.content[0]?.lectures[0]?.videoUrl || "");
+    setIsModalOpen(true);
+  };
 
-const handleUpdate = async (e) => {
-  e.preventDefault();
-  try {
-    const updatedCourse = {
-      ...editingCourse,
-      title,
-      description,
-      price: parseFloat(price),
-      categories,
-      content: [
-        {
-          ...editingCourse.content[0],
-          lectures: [
-            {
-              ...editingCourse.content[0]?.lectures[0],
-              videoUrl,
-            },
-          ],
-        },
-      ],
-    };
-    await updateCourse(editingCourse._id, updatedCourse);
-    setMessage("Cours mis à jour avec succès !");
-    setIsModalOpen(false);
-    setTitle("");
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      const updatedCourse = {
+        ...editingCourse,
+        title,
+        description,
+        price: parseFloat(price),
+        categories,
+        content: [
+          {
+            ...editingCourse.content[0],
+            lectures: [
+              {
+                ...editingCourse.content[0]?.lectures[0],
+                videoUrl,
+              },
+            ],
+          },
+        ],
+      };
+      await updateCourse(editingCourse._id, updatedCourse);
+      setMessage("Cours mis à jour avec succès !");
+      setIsModalOpen(false);
+      setTitle("");
       setCategories("");
       setDescription("");
       setPrice("");
       setVideoUrl("");
-    fetchCourses();
-  } catch (err) {
-    setError(err.response?.data?.error || "Erreur lors de la mise à jour du cours");
-  }
-};
+      fetchCourses();
+    } catch (err) {
+      setError(err.response?.data?.error || "Erreur lors de la mise à jour du cours");
+    }
+  };
 
-  
+
 
   // État pour messages/erreurs
   const [error, setError] = useState("");
@@ -151,21 +153,33 @@ const handleUpdate = async (e) => {
     }
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+  
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {
+      setImage(reader.result); 
+      // reader.result is something like "data:image/png;base64, iVBORw0KGgoAAAANSUhEUg..."
+    };
+  };
+
   // 3) Créer un nouveau cours
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setMessage("");
-
+  
     const categoryArray = categories
       .split(",")
       .map((cat) => cat.trim())
       .filter((cat) => cat.length > 0);
-
+  
     const payload = {
       title,
       description,
-      instructorId, // Récupéré depuis le token
+      instructorId, 
       price: parseFloat(price) || 0,
       categories: categoryArray,
       content: [
@@ -181,26 +195,26 @@ const handleUpdate = async (e) => {
           ],
         },
       ],
+      image: image, // <-- pass the Base64 string
     };
-
+  
     try {
       await createCourse(payload);
       setMessage("Le cours a été créé avec succès !");
-      // Réinitialiser les champs
+      // Clear fields
       setTitle("");
       setCategories("");
       setDescription("");
       setPrice("");
       setVideoUrl("");
-      // Recharger la liste des cours
+      setImage("");   // <-- clear the image
       fetchCourses();
     } catch (err) {
-      setError(
-        err.response?.data?.error || "Erreur lors de la création du cours"
-      );
+      setError(err.response?.data?.error || "Erreur lors de la création du cours");
     }
   };
   
+
 
   // 5) Supprimer un cours
   const handleDelete = async (courseId) => {
@@ -214,6 +228,9 @@ const handleUpdate = async (e) => {
       );
     }
   };
+
+
+  
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-gray-100 px-4 py-8">
@@ -236,6 +253,18 @@ const handleUpdate = async (e) => {
               required
             />
           </div>
+
+          {/* Image */}
+          <div className="mb-4">
+            <label className="block mb-1 font-semibold">Image</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="w-full border border-gray-300 px-3 py-2 rounded"
+            />
+          </div>
+
 
           {/* Catégories */}
           <div className="mb-4">
@@ -314,92 +343,92 @@ const handleUpdate = async (e) => {
       </div>
 
       {isModalOpen && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-    <div className="bg-white p-6 rounded shadow max-w-md w-full">
-      <h2 className="text-xl font-bold mb-4">Modifier le cours</h2>
-      <form onSubmit={handleUpdate}>
-        <div className="mb-4">
-          <label className="block mb-1 font-semibold">Titre</label>
-          <input
-            type="text"
-            className="w-full border px-3 py-2 rounded"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded shadow max-w-md w-full">
+            <h2 className="text-xl font-bold mb-4">Modifier le cours</h2>
+            <form onSubmit={handleUpdate}>
+              <div className="mb-4">
+                <label className="block mb-1 font-semibold">Titre</label>
+                <input
+                  type="text"
+                  className="w-full border px-3 py-2 rounded"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block mb-1 font-semibold">Catégories</label>
+                <select
+                  className="w-full border px-3 py-2 rounded"
+                  value={categories}
+                  onChange={(e) => setCategories(e.target.value)}
+                  required
+                >
+                  <option value="" disabled>
+                    -- Sélectionnez une catégorie --
+                  </option>
+                  <option value="Science des données">Science des données</option>
+                  <option value="Leadership">Leadership</option>
+                  <option value="Communication">Communication</option>
+                  <option value="Analyses et Information Economiques">
+                    Analyses et Information Economiques
+                  </option>
+                  <option value="Development Web">Development Web</option>
+                  <option value="Mathématiques Appliquées">Mathématiques Appliquées</option>
+                  <option value="Thermodynamiques des Fluides">
+                    Thermodynamiques des Fluides
+                  </option>
+                </select>
+              </div>
+              <div className="mb-4">
+                <label className="block mb-1 font-semibold">Description</label>
+                <textarea
+                  className="w-full border px-3 py-2 rounded"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block mb-1 font-semibold">Prix</label>
+                <input
+                  type="number"
+                  className="w-full border px-3 py-2 rounded"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block mb-1 font-semibold">Lien Vidéo</label>
+                <input
+                  type="text"
+                  className="w-full border px-3 py-2 rounded"
+                  value={videoUrl}
+                  onChange={(e) => setVideoUrl(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  className="mr-4 text-gray-600"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  className="bg-blue-600 text-white px-4 py-2 rounded"
+                >
+                  Sauvegarder
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-        <div className="mb-4">
-          <label className="block mb-1 font-semibold">Catégories</label>
-          <select
-            className="w-full border px-3 py-2 rounded"
-            value={categories}
-            onChange={(e) => setCategories(e.target.value)}
-            required
-          >
-            <option value="" disabled>
-              -- Sélectionnez une catégorie --
-            </option>
-            <option value="Science des données">Science des données</option>
-            <option value="Leadership">Leadership</option>
-            <option value="Communication">Communication</option>
-            <option value="Analyses et Information Economiques">
-              Analyses et Information Economiques
-            </option>
-            <option value="Development Web">Development Web</option>
-            <option value="Mathématiques Appliquées">Mathématiques Appliquées</option>
-            <option value="Thermodynamiques des Fluides">
-              Thermodynamiques des Fluides
-            </option>
-          </select>
-        </div>
-        <div className="mb-4">
-          <label className="block mb-1 font-semibold">Description</label>
-          <textarea
-            className="w-full border px-3 py-2 rounded"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block mb-1 font-semibold">Prix</label>
-          <input
-            type="number"
-            className="w-full border px-3 py-2 rounded"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block mb-1 font-semibold">Lien Vidéo</label>
-          <input
-            type="text"
-            className="w-full border px-3 py-2 rounded"
-            value={videoUrl}
-            onChange={(e) => setVideoUrl(e.target.value)}
-            required
-          />
-        </div>
-        <div className="flex justify-end">
-          <button
-            type="button"
-            className="mr-4 text-gray-600"
-            onClick={() => setIsModalOpen(false)}
-          >
-            Annuler
-          </button>
-          <button
-            type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded"
-          >
-            Sauvegarder
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-)}
+      )}
 
 
       {/* Liste des cours */}
@@ -422,12 +451,12 @@ const handleUpdate = async (e) => {
                   <td className="px-4 py-2 border">{course.title}</td>
                   <td className="px-4 py-2 border">{course.price}</td>
                   <td className="px-4 py-2 border">
-                  <button
-  onClick={() => openEditModal(course)}
-  className="text-blue-500 mr-4"
->
-  Modifier
-</button>
+                    <button
+                      onClick={() => openEditModal(course)}
+                      className="text-blue-500 mr-4"
+                    >
+                      Modifier
+                    </button>
                     <button
                       onClick={() => handleDelete(course._id)}
                       className="text-red-500"

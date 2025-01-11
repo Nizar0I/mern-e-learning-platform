@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { getCourseById } from '../services/api';
+import { useCart } from '../context/CartContext';
 
 const CourseDetail = () => {
   const { id } = useParams();
   const [course, setCourse] = useState(null);
   const [error, setError] = useState('');
+
+  // Access the addToCart function from our CartContext
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -27,29 +31,38 @@ const CourseDetail = () => {
     return <p className="p-4">Chargement...</p>;
   }
 
+  const handleAddToCart = () => {
+    addToCart(course);
+    alert("Course added to cart!");
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row gap-6">
         {/* Image du cours */}
         <img
-          src="https://images.unsplash.com/photo-1579154202081-c68521991cec?auto=format&w=800&q=80"
-          alt="course detail"
-          className="w-full md:w-1/3 h-64 object-cover rounded"
+          src={course.image || "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&w=800&q=80"}
+          alt="course"
+          className="w-80 h-40 object-cover"
         />
-        
+
         {/* Détails du cours */}
         <div className="md:w-2/3">
           <h2 className="text-3xl font-bold mb-2">{course.title}</h2>
           <p className="text-gray-600 mb-4">{course.description}</p>
           <p className="text-xl font-semibold mb-6">
-            Prix : 
+            Prix :
             <span className="ml-2 text-blue-600">
               {course.price === 0 ? 'Gratuit' : `${course.price} €`}
             </span>
           </p>
 
-          <button className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition font-semibold">
-            S'inscrire / Acheter
+          {/* Button to add to cart */}
+          <button
+            onClick={handleAddToCart}
+            className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition font-semibold"
+          >
+            Ajouter au Panier
           </button>
         </div>
       </div>

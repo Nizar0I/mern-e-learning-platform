@@ -22,7 +22,7 @@ const Home = () => {
       <section
         className="h-[70vh] bg-cover bg-center flex items-center justify-center relative"
         style={{
-          backgroundImage: `url('https://images.unsplash.com/photo-1581093588401-9f09b32383fa?auto=format&w=1350&q=80')`,
+          backgroundImage: "url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&w=800&q=80')",
         }}
       >
         <div className="absolute inset-0 bg-black bg-opacity-40"></div>
@@ -168,7 +168,7 @@ const Home = () => {
 
             <div className="bg-white shadow-md rounded overflow-hidden">
               <img
-                src="https://images.unsplash.com/photo-1518972559570-0a555944f0e0?auto=format&w=800&q=80"
+                src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&w=800&q=80"
                 alt="Communauté d'entraide"
                 className="w-full h-48 object-cover"
               />
