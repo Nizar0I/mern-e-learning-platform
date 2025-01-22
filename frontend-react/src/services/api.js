@@ -73,6 +73,69 @@ export const getPurchaseStatus = (userId, courseId) => {
     params: { userId, courseId }
   });
 };
+
+export const getAdminDashboardStats = async () => {
+  try {
+    const { data } = await axios.get(`${API_URL}/admin/dashboard-stats`);
+    return data; // data should contain your stats object
+  } catch (error) {
+    console.error("Failed to fetch admin dashboard stats:", error);
+    throw error;
+  }
+};
+
+
+
+// ----- User Management (Admin) ----- 
+// 1) GET all users (with optional search)
+export const getAllUsers = (search = "") => {
+  const token = localStorage.getItem("token") || "";
+  return axios.get(`${API_URL}/users?search=${encodeURIComponent(search)}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+// 2) GET single user by ID
+export const getUserById = (userId) => {
+  const token = localStorage.getItem("token") || "";
+  return axios.get(`${API_URL}/users/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+// 3) CREATE a user (admin can create new user)
+export const createUser = (payload) => {
+  const token = localStorage.getItem("token") || "";
+  return axios.post(`${API_URL}/users`, payload, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+// 4) UPDATE a user
+export const updateUser = (userId, payload) => {
+  const token = localStorage.getItem("token") || "";
+  return axios.put(`${API_URL}/users/${userId}`, payload, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+// 5) DELETE a user
+export const deleteUser = (userId) => {
+  const token = localStorage.getItem("token") || "";
+  return axios.delete(`${API_URL}/users/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
 /*export const checkout = (payload) => {
   const token = localStorage.getItem("token") || "";
   return axios.post(`http://localhost:3007/payments/checkout`, payload, {

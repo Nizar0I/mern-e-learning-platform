@@ -11,9 +11,13 @@ import CourseDetail from './pages/CourseDetail';
 import MyCourseDetail from './pages/MyCourseDetail';
 import MyCourses from './pages/MyCourses';
 
+import AdminCoursesPage from "./pages/AdminCoursesPage";
+import AdminUsersPage from "./pages/AdminUsersPage";
+
 import { CartProvider } from "./context/CartContext";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
+import AdminDashboard from "./pages/AdminDashboard"
 
 // Pages formateur
 import InstructorDashboard from './pages/InstructorDashboard';
@@ -29,8 +33,11 @@ function App() {
           <Route path="/courses" element={<Courses />} />
           <Route path="/courses/:id" element={<CourseDetail />} />
           <Route path="/mycourses" element={<MyCourses />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           
-          
+          <Route path="/adminCourses" element={<AdminCoursesPage />} />
+          <Route path="/adminUsers" element={<AdminUsersPage />} />
+
           {/* Étudiants (existant) */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />

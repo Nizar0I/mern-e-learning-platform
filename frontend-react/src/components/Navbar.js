@@ -46,7 +46,7 @@ const Navbar = () => {
         </Link>
 
         <nav className="space-x-4 flex items-center">
-          {/* Courses Link */}
+          {/* Courses Link (visible to everyone) */}
           <Link
             to="/courses"
             className="text-gray-600 hover:text-blue-600 transition"
@@ -54,8 +54,8 @@ const Navbar = () => {
             Cours
           </Link>
 
-          {/* Conditionally render Cart Link for logged-in students */}
-          {user && user.role !== "instructor" && (
+          {/* Conditionally render Cart Link for logged-in STUDENTS (not instructors or admins) */}
+          {user && user.role === "student" && (
             <Link
               to="/cart"
               className="relative text-gray-600 hover:text-blue-600 transition"
@@ -67,26 +67,47 @@ const Navbar = () => {
                 </span>
               )}
             </Link>
-            
           )}
 
-          
-          {user && user.role !== "instructor" && (
-            <Link to="/mycourses" className="text-gray-600 hover:text-blue-600 transition">
+          {/* "Mes Cours" for STUDENTS only */}
+          {user && user.role === "student" && (
+            <Link
+              to="/mycourses"
+              className="text-gray-600 hover:text-blue-600 transition"
+            >
               Mes Cours
             </Link>
           )}
-          {/* If User is logged in */}
+
+          {/* If user is logged in */}
           {user ? (
             <>
-              {/* If user is instructor, show Dashboard */}
+              {/* If user is instructor, show instructor dashboard */}
               {user.role === "instructor" && (
                 <Link
                   to="/instructor/dashboard"
                   className="text-gray-600 hover:text-blue-600 transition"
                 >
-                  Dashboard
+                  Dashboard Formateur
                 </Link>
+              )}
+
+              {/* If user is admin, show admin links */}
+              {user.role === "admin" && (
+                <>
+                  <Link
+                    to="/adminUsers"
+                    className="text-gray-600 hover:text-blue-600 transition"
+                  >
+                    Gestion des utilisateurs
+                  </Link>
+                  <Link
+                    to="/adminCourses"
+                    className="text-gray-600 hover:text-blue-600 transition"
+                  >
+                    Gestion des cours
+                  </Link>
+                </>
               )}
 
               <span className="text-gray-600">
@@ -101,6 +122,7 @@ const Navbar = () => {
               </button>
             </>
           ) : (
+            /* If no user, show Login / Sign Up */
             <>
               <Link
                 to="/login"

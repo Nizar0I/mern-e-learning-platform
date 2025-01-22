@@ -47,6 +47,12 @@ services:
     depends_on:
       - mongo
 
+  admin-service:
+    build: ./admin-service
+    container_name: admin-service-1
+    ports:
+      - "3006:3006"
+
   api-gateway:
     build: ./api-gateway
     container_name: api-gateway
