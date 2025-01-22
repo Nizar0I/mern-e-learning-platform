@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { loginUser } from '../services/api';
+import React, { useState } from "react";
+import { loginUser } from "../services/api";
+import { jwtDecode } from 'jwt-decode';
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -11,10 +12,24 @@ const Login = () => {
     e.preventDefault();
     try {
       const { data } = await loginUser({ email, password, role });
+      // data is: { token: "..." }
+
+      // 1) Store the token in local storage
       localStorage.setItem("token", data.token);
+
+      // 2) Decode the token to get the userId
+      const decoded = jwtDecode(data.token);
+      // Typically your token payload might look like:
+      // { userId: 'some-user-id', iat: 166722..., exp: 166723... }
+      // So we'll do:
+      const userId = decoded.userId; // Adjust the key if your payload is different
+
+      // 3) Store userId in localStorage
+      localStorage.setItem("userId", userId);
+
       alert("Connexion réussie !");
-      // Par exemple, si c'est un instructor, le rediriger vers
-      // un dashboard formateur, sinon vers la Home
+
+      // 4) Redirect based on role
       if (role === "instructor") {
         window.location.href = "/instructor/dashboard";
       } else {
@@ -26,7 +41,6 @@ const Login = () => {
       } else {
         setError(err.response?.data?.error || "Erreur lors de la connexion");
       }
-      
     }
   };
 
@@ -63,7 +77,7 @@ const Login = () => {
           />
         </div>
 
-        {/* Sélecteur de rôle 
+        {/* Sélecteur de rôle
         <div className="mb-4">
           <label className="block mb-1 font-semibold">Rôle</label>
           <select

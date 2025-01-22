@@ -1,9 +1,13 @@
 const Course = require("../models/Course");
 
-// POST /courses (create a new course)
+// controllers/courseController.js
 exports.createCourse = async (req, res) => {
   try {
-    const course = await Course.create(req.body);
+    // The image field will be a Base64-encoded string from the frontend
+    const course = await Course.create({
+      ...req.body,
+      image: req.body.image || "",  // handle if not provided
+    });
     return res.status(201).json(course);
   } catch (err) {
     return res.status(500).json({ error: err.message });
@@ -51,10 +55,17 @@ exports.getCourseById = async (req, res) => {
 
 exports.updateCourse = async (req, res) => {
   try {
-    const course = await Course.findByIdAndUpdate(req.params.id, req.body, {
-      new: true, // Return the updated document
-      runValidators: true, // Validate the data against the schema
-    });
+    // If an image is provided, it will override the existing one
+    const course = await Course.findByIdAndUpdate(
+      req.params.id,
+      {
+        ...req.body,
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
     if (!course) {
       return res.status(404).json({ error: "Cours non trouvé" });
     }
@@ -63,6 +74,7 @@ exports.updateCourse = async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 };
+
 
 // DELETE /courses/:id (delete a course)
 exports.deleteCourse = async (req, res) => {

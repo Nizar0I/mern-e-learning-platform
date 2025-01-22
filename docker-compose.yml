@@ -58,6 +58,7 @@ services:
       - payment-service
     environment:
       - JWT_SECRET=secret_key
+      - PAYMENT_SERVICE_URL=http://payment-service:3003
 
 volumes:
   mongo_data:

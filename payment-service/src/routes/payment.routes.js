@@ -1,10 +1,9 @@
-const router = require('express').Router();
-const { createPayment, getPayment } = require('../controllers/paymentController');
+import express from "express";
+import { checkout, getPurchaseStatus } from "../controllers/paymentController.js";
 
-// POST /payments
-router.post('/', createPayment);
+const router = express.Router();
 
-// GET /payments/:id
-router.get('/:id', getPayment);
+router.post("/checkout", checkout);
+router.get("/purchase-status", getPurchaseStatus);
 
-module.exports = router;
+export default router;

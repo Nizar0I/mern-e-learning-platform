@@ -1,8 +1,20 @@
-FROM node:18-alpine
+# Use an official Node.js runtime as a parent image
+FROM node:18
 
-WORKDIR /app
+# Set the working directory inside the container
+WORKDIR /usr/src/app
+
+# Copy package.json and package-lock.json for npm install
 COPY package*.json ./
+
+# Install dependencies
 RUN npm install
+
+# Copy the rest of the application code
 COPY . .
-EXPOSE 3003
+
+# Expose port 3007 for the payment service
+EXPOSE 3007
+
+# Start the application
 CMD ["npm", "start"]

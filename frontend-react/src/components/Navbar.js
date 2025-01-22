@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode"; // or import { jwtDecode } from 'jwt-decode';
-import { useCart } from "../context/CartContext"; // <-- Import your CartContext hook
+import {jwtDecode} from "jwt-decode"; 
+import { useCart } from "../context/CartContext"; 
 
 const Navbar = () => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  // Access the cart state from CartContext
   const { cart } = useCart();
 
   useEffect(() => {
@@ -22,7 +21,6 @@ const Navbar = () => {
         return;
       }
       const decoded = jwtDecode(token);
-      // Example: if your token payload has "email" and "role"
       setUser({
         email: decoded.email,
         role: decoded.role,
@@ -56,23 +54,32 @@ const Navbar = () => {
             Cours
           </Link>
 
-          {/* Cart Link with badge */}
-          <Link
-            to="/cart"
-            className="relative text-gray-600 hover:text-blue-600 transition"
-          >
-            Panier
-            {cart.length > 0 && (
-              <span className="absolute top-[-6px] right-[-12px] bg-red-600 text-white text-xs rounded-full px-2 py-0.5">
-                {cart.length}
-              </span>
-            )}
-          </Link>
+          {/* Conditionally render Cart Link for logged-in students */}
+          {user && user.role !== "instructor" && (
+            <Link
+              to="/cart"
+              className="relative text-gray-600 hover:text-blue-600 transition"
+            >
+              Panier
+              {cart.length > 0 && (
+                <span className="absolute top-[-6px] right-[-12px] bg-red-600 text-white text-xs rounded-full px-2 py-0.5">
+                  {cart.length}
+                </span>
+              )}
+            </Link>
+            
+          )}
 
+          
+          {user && user.role !== "instructor" && (
+            <Link to="/mycourses" className="text-gray-600 hover:text-blue-600 transition">
+              Mes Cours
+            </Link>
+          )}
           {/* If User is logged in */}
           {user ? (
             <>
-              {/* If user is instructor, show a button to the instructor dashboard */}
+              {/* If user is instructor, show Dashboard */}
               {user.role === "instructor" && (
                 <Link
                   to="/instructor/dashboard"

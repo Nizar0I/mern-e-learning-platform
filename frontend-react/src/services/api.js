@@ -67,3 +67,17 @@ export const checkout = (payload) => {
     },
   });
 };
+
+export const getPurchaseStatus = (userId, courseId) => {
+  return axios.get(`${API_URL}/payments/purchase-status`, {
+    params: { userId, courseId }
+  });
+};
+/*export const checkout = (payload) => {
+  const token = localStorage.getItem("token") || "";
+  return axios.post(`http://localhost:3007/payments/checkout`, payload, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};*/

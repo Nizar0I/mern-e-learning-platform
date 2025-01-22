@@ -1,7 +1,7 @@
-// src/pages/CheckoutPage.js
 import React, { useState } from "react";
 import { useCart } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
+import { checkout } from "../services/api"; // <-- import your API service function
 
 const CheckoutPage = () => {
   const { cart, clearCart } = useCart();
@@ -54,17 +54,12 @@ const CheckoutPage = () => {
     // Basic validation
     const newErrors = [];
 
-    // e.g., check card number length (16 digits for this example)
     if (!/^\d{16}$/.test(cardNumber)) {
       newErrors.push("Numéro de carte invalide (16 chiffres requis)");
     }
-
-    // Check expiry date (MM/YY or MM/YYYY). This is very basic.
     if (!/^\d{2}\/\d{2,4}$/.test(expiryDate)) {
       newErrors.push("Date d’expiration invalide (format MM/YY attendu)");
     }
-
-    // Check CVC (3 digits commonly)
     if (!/^\d{3}$/.test(cvc)) {
       newErrors.push("CVC invalide (3 chiffres requis)");
     }
@@ -74,17 +69,43 @@ const CheckoutPage = () => {
       return;
     }
 
-    // If all validations pass, show spinner
     setErrors([]);
     setIsProcessing(true);
 
-    // Simulate payment process (2 seconds)
-    setTimeout(() => {
-        setIsProcessing(false);
-        setSuccess(true);
-        // Delay clearing the cart for another few seconds
-      }, 2000);
+    try {
+      // 1) Simulate a real payment process (like Stripe) here
+      // For demo, we just do a 2-second timeout
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      // 2) After "payment" success, call our backend to record the purchase
+      // Retrieve userId from localStorage (assuming you stored it at login)
+      const userId = localStorage.getItem("userId");
       
+      // If you have no userId stored yet, you'll need to handle that scenario
+      // e.g., if (!userId) throw new Error("User not logged in");
+
+      const payload = {
+        userId,
+        cart,       // the array of courses from the CartContext
+        currency: "EUR",
+      };
+
+      const response = await checkout(payload);
+      // If successful, the server returns something like { message: "Paiement réussi" }
+      console.log("Checkout success:", response.data);
+
+      setIsProcessing(false);
+      setSuccess(true);
+
+    } catch (error) {
+      setIsProcessing(false);
+      // If axios fails with a server error:
+      if (error.response) {
+        setErrors([error.response.data.error || "Erreur lors du paiement"]);
+      } else {
+        setErrors([error.message]);
+      }
+    }
   };
 
   return (
@@ -114,7 +135,6 @@ const CheckoutPage = () => {
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded shadow max-w-md w-full relative">
-            {/* Close button */}
             <button
               className="absolute top-2 right-2 text-gray-500"
               onClick={handleCloseModal}
@@ -127,7 +147,6 @@ const CheckoutPage = () => {
               <>
                 <h2 className="text-xl font-bold mb-4">Informations de paiement</h2>
 
-                {/* Error messages */}
                 {errors.length > 0 && (
                   <div className="mb-4 text-red-600">
                     {errors.map((err, i) => (
@@ -172,7 +191,6 @@ const CheckoutPage = () => {
                 {/* Payment button with spinner */}
                 {isProcessing ? (
                   <div className="flex items-center justify-center mt-4">
-                    {/* Simple spinner */}
                     <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-8 w-8 mr-2" />
                     <span>Traitement en cours...</span>
                   </div>
@@ -191,7 +209,6 @@ const CheckoutPage = () => {
             {success && (
               <div className="text-center">
                 <div className="flex items-center justify-center my-4">
-                  {/* Example of a success icon or checkmark */}
                   <svg
                     className="text-green-600 w-12 h-12"
                     fill="none"
@@ -210,7 +227,7 @@ const CheckoutPage = () => {
                   Commande confirmée !
                 </h3>
                 <p className="mb-4">
-                  Vous allez recevoir les liens des cours par e-mail. Merci pour votre achat !
+                  Vous pouvez maintenant accéder au contenu du cours. Merci pour votre achat !
                 </p>
                 <button
                   className="bg-green-600 text-white px-4 py-2 rounded"

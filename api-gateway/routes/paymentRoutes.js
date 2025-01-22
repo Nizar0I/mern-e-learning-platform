@@ -1,32 +1,36 @@
-// routes/payment.routes.js
-const router = require("express").Router();
-const axios = require("axios");
+// paymentRoutes.js (CommonJS version)
+const express = require('express');
+const axios = require('axios');
 
-// POST /payments
-router.post("/", async (req, res) => {
+const router = express.Router();
+
+router.post("/checkout", async (req, res) => {
   try {
+    // Forward the request to your Payment microservice
     const { data } = await axios.post(
-      "http://payment-service:3003/payments",
+      "http://payment-service:3007/payments/checkout", 
       req.body
     );
     return res.json(data);
-  } catch (err) {
-    console.error("Erreur création paiement:", err.message);
+  } catch (error) {
+    console.error("Erreur paiement (checkout):", error.message);
     return res.status(500).json({ error: "Erreur interne" });
   }
 });
 
-// GET /payments/:id
-router.get("/:id", async (req, res) => {
+
+router.get("/purchase-status", async (req, res) => {
   try {
-    const { data } = await axios.get(
-      `http://payment-service:3003/payments/${req.params.id}`
-    );
-    return res.json(data);
-  } catch (err) {
-    console.error("Erreur récupération paiement:", err.message);
-    return res.status(500).json({ error: "Erreur interne" });
+    // Forward the request to the Payment Service's purchase-status endpoint
+    const response = await axios.get("http://payment-service:3007/payments/purchase-status", {
+      params: req.query  // Forward query parameters: userId and courseId
+    });
+    res.json(response.data);
+  } catch (error) {
+    console.error("Erreur vérification achat:", error.message);
+    res.status(500).json({ error: "Erreur interne" });
   }
 });
+
 
 module.exports = router;

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const PaymentSchema = new Schema({
@@ -9,4 +9,5 @@ const PaymentSchema = new Schema({
   status: { type: String, enum: ['pending', 'paid', 'cancelled'], default: 'pending' }
 }, { timestamps: true });
 
-module.exports = mongoose.model('Payment', PaymentSchema);
+const Payment = mongoose.model('Payment', PaymentSchema);
+export default Payment;
